@@ -24,6 +24,24 @@
     }
   
 <style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    max-width: 1000px;
+    display: block;
+    margin: 0 auto;
+    touch-action: manipulation;
+  }
+  .state {
+    fill: #ccc;
+    stroke: #333;
+    cursor: default;
+    transition: fill 0.2s ease-in-out;
+  }
   .state:hover {
     stroke: #000;
     stroke-width: 2;
@@ -32,6 +50,11 @@
     position: absolute;
     display: none;
     z-index: 10;
+    border: none;
+    background: transparent;
+    padding: 0;
+    height: 40px;
+    width: 40px;
   }
   .tooltip {
     position: absolute;
@@ -43,6 +66,18 @@
     pointer-events: none;
     display: none;
     z-index: 100;
+    max-width: 200px;
+    word-wrap: break-word;
+  }
+  @media (max-width: 600px) {
+    .tooltip {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+    #colorPicker {
+      height: 30px;
+      width: 30px;
+    }
   }
 </style>
 </style>
@@ -99,6 +134,24 @@
        type="text/css"
        id="style6">path { fill-rule: evenodd; }
 <style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    max-width: 1000px;
+    display: block;
+    margin: 0 auto;
+    touch-action: manipulation;
+  }
+  .state {
+    fill: #ccc;
+    stroke: #333;
+    cursor: default;
+    transition: fill 0.2s ease-in-out;
+  }
   .state:hover {
     stroke: #000;
     stroke-width: 2;
@@ -107,6 +160,11 @@
     position: absolute;
     display: none;
     z-index: 10;
+    border: none;
+    background: transparent;
+    padding: 0;
+    height: 40px;
+    width: 40px;
   }
   .tooltip {
     position: absolute;
@@ -118,6 +176,18 @@
     pointer-events: none;
     display: none;
     z-index: 100;
+    max-width: 200px;
+    word-wrap: break-word;
+  }
+  @media (max-width: 600px) {
+    .tooltip {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+    #colorPicker {
+      height: 30px;
+      width: 30px;
+    }
   }
 </style>
 </style>
@@ -565,35 +635,57 @@
   const tooltip = document.getElementById('tooltip');
   let currentState = null;
 
-  const states = document.querySelectorAll('.state');
+  function positionColorPicker(x, y) {
+    const pickerWidth = 200;
+    const pickerHeight = 50;
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+    let left = Math.min(x, screenW - pickerWidth - 10);
+    let top = Math.min(y, screenH - pickerHeight - 10);
+    colorPicker.style.left = `${left}px`;
+    colorPicker.style.top = `${top}px`;
+  }
 
+  function rgbToHex(rgb) {
+    const result = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
+    return result ? "#" + result.slice(1).map(n => ('0' + parseInt(n).toString(16)).slice(-2)).join('') : rgb;
+  }
+
+  const states = document.querySelectorAll('.state');
   states.forEach(state => {
     const savedColor = localStorage.getItem(`color-${state.id}`);
-    if (savedColor) {
-      state.style.fill = savedColor;
-    }
+    if (savedColor) state.style.fill = savedColor;
 
-    // Tooltip behavior
+    // Tooltip mouse
     state.addEventListener('mousemove', e => {
+      tooltip.textContent = state.getAttribute('data-name') || state.getAttribute('title') || state.id;
       tooltip.style.left = `${e.pageX + 10}px`;
       tooltip.style.top = `${e.pageY + 10}px`;
-      tooltip.textContent = state.getAttribute('data-name') || state.getAttribute('title') || state.id;
       tooltip.style.display = 'block';
     });
-
     state.addEventListener('mouseleave', () => {
       tooltip.style.display = 'none';
     });
 
-    // Admin-only color picking
+    // Tooltip touch
+    state.addEventListener('touchstart', e => {
+      tooltip.textContent = state.getAttribute('data-name') || state.getAttribute('title') || state.id;
+      tooltip.style.left = `${e.touches[0].pageX + 10}px`;
+      tooltip.style.top = `${e.touches[0].pageY + 10}px`;
+      tooltip.style.display = 'block';
+    }, { passive: true });
+    state.addEventListener('touchend', () => {
+      tooltip.style.display = 'none';
+    });
+
+    // Admin color editing
     if (isAdmin) {
       state.style.cursor = 'pointer';
       state.addEventListener('click', e => {
         currentState = state;
         const currentColor = state.style.fill || '#cccccc';
         colorPicker.value = rgbToHex(currentColor);
-        colorPicker.style.left = `${e.pageX}px`;
-        colorPicker.style.top = `${e.pageY}px`;
+        positionColorPicker(e.pageX, e.pageY);
         colorPicker.style.display = 'block';
         colorPicker.focus();
       });
@@ -606,13 +698,7 @@
       localStorage.setItem(`color-${currentState.id}`, colorPicker.value);
     }
   });
-
   colorPicker.addEventListener('blur', () => {
     colorPicker.style.display = 'none';
   });
-
-  function rgbToHex(rgb) {
-    const result = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
-    return result ? "#" + result.slice(1).map(n => ('0' + parseInt(n).toString(16)).slice(-2)).join('') : rgb;
-  }
 </script>
