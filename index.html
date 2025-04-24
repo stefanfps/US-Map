@@ -624,7 +624,8 @@
 </html>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
   const isAdmin = window.location.search.includes("admin=true");
   const colorPicker = document.getElementById('colorPicker');
   const tooltip = document.getElementById('tooltip');
@@ -697,4 +698,7 @@ document.addEventListener('DOMContentLoaded', function () {
     colorPicker.style.display = 'none';
   });
 });
+</script>
+  });
+})();
 </script>
