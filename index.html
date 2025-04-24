@@ -50,11 +50,10 @@
     position: absolute;
     display: none;
     z-index: 10;
-    border: none;
-    background: transparent;
-    padding: 0;
     height: 40px;
     width: 40px;
+    background: transparent;
+    border: none;
   }
   .tooltip {
     position: absolute;
@@ -66,8 +65,6 @@
     pointer-events: none;
     display: none;
     z-index: 100;
-    max-width: 200px;
-    word-wrap: break-word;
   }
   @media (max-width: 600px) {
     .tooltip {
@@ -160,11 +157,10 @@
     position: absolute;
     display: none;
     z-index: 10;
-    border: none;
-    background: transparent;
-    padding: 0;
     height: 40px;
     width: 40px;
+    background: transparent;
+    border: none;
   }
   .tooltip {
     position: absolute;
@@ -176,8 +172,6 @@
     pointer-events: none;
     display: none;
     z-index: 100;
-    max-width: 200px;
-    word-wrap: break-word;
   }
   @media (max-width: 600px) {
     .tooltip {
@@ -630,6 +624,7 @@
 </html>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
   const isAdmin = window.location.search.includes("admin=true");
   const colorPicker = document.getElementById('colorPicker');
   const tooltip = document.getElementById('tooltip');
@@ -656,29 +651,28 @@
     const savedColor = localStorage.getItem(`color-${state.id}`);
     if (savedColor) state.style.fill = savedColor;
 
-    // Tooltip mouse
     state.addEventListener('mousemove', e => {
       tooltip.textContent = state.getAttribute('data-name') || state.getAttribute('title') || state.id;
       tooltip.style.left = `${e.pageX + 10}px`;
       tooltip.style.top = `${e.pageY + 10}px`;
       tooltip.style.display = 'block';
     });
+
     state.addEventListener('mouseleave', () => {
       tooltip.style.display = 'none';
     });
 
-    // Tooltip touch
     state.addEventListener('touchstart', e => {
       tooltip.textContent = state.getAttribute('data-name') || state.getAttribute('title') || state.id;
       tooltip.style.left = `${e.touches[0].pageX + 10}px`;
       tooltip.style.top = `${e.touches[0].pageY + 10}px`;
       tooltip.style.display = 'block';
     }, { passive: true });
+
     state.addEventListener('touchend', () => {
       tooltip.style.display = 'none';
     });
 
-    // Admin color editing
     if (isAdmin) {
       state.style.cursor = 'pointer';
       state.addEventListener('click', e => {
@@ -698,7 +692,9 @@
       localStorage.setItem(`color-${currentState.id}`, colorPicker.value);
     }
   });
+
   colorPicker.addEventListener('blur', () => {
     colorPicker.style.display = 'none';
   });
+});
 </script>
