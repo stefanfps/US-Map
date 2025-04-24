@@ -577,53 +577,6 @@
      style="stroke-width:0.97063118000000004;fill:#f9f9f9" />
 </svg>
 
-  <script>
-    const colorPicker = document.getElementById('colorPicker');
-    let currentState = null;
-
-    const states = document.querySelectorAll('.state');
-
-    // Load saved colors
-    states.forEach(state => {
-      const savedColor = localStorage.getItem(`color-${state.id}`);
-      if (savedColor) {
-        state.style.fill = savedColor;
-      }
-    });
-
-    states.forEach(state => {
-      state.addEventListener('click', (e) => {
-        currentState = state;
-        const currentColor = state.style.fill || '#cccccc';
-        colorPicker.value = rgbToHex(currentColor);
-        colorPicker.style.left = `${e.pageX}px`;
-        colorPicker.style.top = `${e.pageY}px`;
-        colorPicker.style.display = 'block';
-        colorPicker.focus();
-      });
-    });
-
-    colorPicker.addEventListener('input', () => {
-      if (currentState) {
-        currentState.style.fill = colorPicker.value;
-        localStorage.setItem(`color-${currentState.id}`, colorPicker.value);
-      }
-    });
-
-    // Hide color picker when it loses focus
-    colorPicker.addEventListener('blur', () => {
-      colorPicker.style.display = 'none';
-    });
-
-    // Utility: RGB to Hex
-    function rgbToHex(rgb) {
-      const result = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
-      return result ? "#" + result.slice(1).map(n => ('0' + parseInt(n).toString(16)).slice(-2)).join('') : rgb;
-    }
-  </script>
-</body>
-</html>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const tooltip = document.getElementById('tooltip');
